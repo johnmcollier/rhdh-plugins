@@ -16,14 +16,22 @@
 
 import { LoggerService, DiscoveryService } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
-import {
-  Publisher,
-  PublisherBase,
-  TechDocsMetadata,
-} from '@backstage/plugin-techdocs-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import TurndownService from 'turndown';
+
+/**
+ * TechDocsMetadata - Custom interface to replace @backstage/plugin-techdocs-node dependency
+ *
+ * @public
+ */
+export interface TechDocsMetadata {
+  site_name?: string;
+  site_description?: string;
+  build_timestamp?: number;
+  etag?: string;
+  files?: string[];
+}
 
 /**
  * TechDocsEntity
@@ -122,7 +130,6 @@ export interface TechDocsCoverageResult {
  * @public
  */
 export class TechDocsService {
-  private publisher?: PublisherBase;
   private turndownService: TurndownService;
 
   constructor(
@@ -157,20 +164,6 @@ export class TechDocsService {
     }
   }
 
-  async initialize() {
-    this.publisher = await Publisher.fromConfig(this.config, {
-      logger: this.logger,
-      discovery: this.discovery,
-    });
-  }
-
-  async getPublisher(): Promise<PublisherBase> {
-    if (!this.publisher) {
-      await this.initialize();
-    }
-    return this.publisher!;
-  }
-
   // generateTechDocsUrls:: creates the techdoc urls
   async generateTechDocsUrls(
     entity: Entity,
@@ -187,22 +180,45 @@ export class TechDocsService {
     };
   }
 
-  // fetchTechDocsMetadata:: fetches all metadata for given entity
+  // fetchTechDocsMetadata:: fetches all metadata for given entity using HTTP API
   async fetchTechDocsMetadata(
     entity: Entity,
+    auth?: any,
   ): Promise<TechDocsMetadata | null> {
     try {
-      const publisher = await this.getPublisher();
       const { namespace = 'default', name } = entity.metadata;
       const kind = entity.kind.toLowerCase();
 
-      const entityName = {
-        kind,
-        namespace,
-        name,
-      };
+      const techdocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
+      const metadataUrl = `${techdocsBaseUrl}/metadata/${namespace}/${kind}/${name}`;
 
-      const metadata = await publisher.fetchTechDocsMetadata(entityName);
+      this.logger.debug(`Fetching TechDocs metadata from URL: ${metadataUrl}`);
+      const fetch = this.fetchFunction || (await import('node-fetch')).default;
+      const headers: Record<string, string> = {};
+
+      if (auth) {
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: await auth.getOwnServiceCredentials(),
+          targetPluginId: 'techdocs',
+        });
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(metadataUrl, { headers });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          this.logger.debug(
+            `TechDocs metadata not found for ${entity.kind}:${namespace}/${name}`,
+          );
+          return null;
+        }
+        throw new Error(
+          `Failed to fetch TechDocs metadata: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      const metadata = await response.json();
       return metadata;
     } catch (error) {
       this.logger.warn(
@@ -299,6 +315,7 @@ export class TechDocsService {
             kind,
             metadata: { name, namespace },
           } as Entity),
+        auth,
       );
 
       // try to convert any type to raw text
@@ -489,7 +506,7 @@ export class TechDocsService {
     const entities = await Promise.all(
       entitiesWithTechDocs.map(async entity => {
         const urls = await this.generateTechDocsUrls(entity);
-        const techDocsMetadata = await this.fetchTechDocsMetadata(entity);
+        const techDocsMetadata = await this.fetchTechDocsMetadata(entity, auth);
 
         const metadata = techDocsMetadata
           ? {
