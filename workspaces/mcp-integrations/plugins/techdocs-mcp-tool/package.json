@@ -37,12 +37,14 @@
     "@backstage/catalog-model": "^1.7.2",
     "@backstage/errors": "^1.2.7",
     "@backstage/plugin-catalog-node": "^1.18.0",
-    "@backstage/plugin-techdocs-node": "^1.13.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "node-fetch": "^2.6.12",
     "turndown": "^7.2.1",
     "zod": "^3.22.4"
+  },
+  "peerDependencies": {
+    "@backstage/plugin-techdocs-node": "^1.13.6"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "^1.8.0",
