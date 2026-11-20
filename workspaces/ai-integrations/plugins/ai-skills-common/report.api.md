@@ -13,7 +13,13 @@ export const ANNOTATION_AI_ASSET_SOURCE = 'rhdh.io/ai-asset-source';
 export const ANNOTATION_AI_ASSET_VERSION = 'rhdh.io/ai-asset-version';
 
 // @public
+export const ANNOTATION_NPX_SKILL_KEY = 'rhdh.io/npx-skill-key';
+
+// @public
 export const ANNOTATION_NPX_SKILL_REF = 'rhdh.io/npx-skill-ref';
+
+// @public
+export const ANNOTATION_NPX_SKILL_REGISTRY = 'rhdh.io/npx-skill-registry';
 
 // @public
 export const ANNOTATION_OCI_SKILL_REF = 'rhdh.io/oci-skill-ref';

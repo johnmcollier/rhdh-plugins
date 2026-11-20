@@ -40,7 +40,9 @@ import {
   ANNOTATION_AI_ASSET_CATEGORY,
   ANNOTATION_AI_ASSET_SOURCE,
   ANNOTATION_AI_ASSET_VERSION,
+  ANNOTATION_NPX_SKILL_KEY,
   ANNOTATION_NPX_SKILL_REF,
+  ANNOTATION_NPX_SKILL_REGISTRY,
   ANNOTATION_OCI_SKILL_REF,
   MAX_RESPONSE_BYTES,
   computeCatalogName,
@@ -504,8 +506,8 @@ function buildEntity(
   } else if (sourceType === 'npx') {
     const npxRef = `${record.sourceUri}#${record.digest}`;
     annotations[ANNOTATION_NPX_SKILL_REF] = npxRef;
-    annotations['rhdh.io/npx-skill-key'] = record.key;
-    if (registryBase) annotations['rhdh.io/npx-skill-registry'] = registryBase;
+    annotations[ANNOTATION_NPX_SKILL_KEY] = record.key;
+    if (registryBase) annotations[ANNOTATION_NPX_SKILL_REGISTRY] = registryBase;
   }
 
   annotations[

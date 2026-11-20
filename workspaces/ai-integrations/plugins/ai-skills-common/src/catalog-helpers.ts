@@ -67,6 +67,18 @@ export const ANNOTATION_OCI_SKILL_REF = 'rhdh.io/oci-skill-ref';
  */
 export const ANNOTATION_NPX_SKILL_REF = 'rhdh.io/npx-skill-ref';
 
+/**
+ * Original skill key from the npx discovery index.
+ * @public
+ */
+export const ANNOTATION_NPX_SKILL_KEY = 'rhdh.io/npx-skill-key';
+
+/**
+ * Registry base URL for the npx install command.
+ * @public
+ */
+export const ANNOTATION_NPX_SKILL_REGISTRY = 'rhdh.io/npx-skill-registry';
+
 // ─── Identity ────────────────────────────────────────────────────────
 
 /**

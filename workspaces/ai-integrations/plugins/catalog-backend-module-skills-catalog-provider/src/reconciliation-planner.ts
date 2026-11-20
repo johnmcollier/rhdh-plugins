@@ -29,7 +29,11 @@
  */
 
 import { stringifyEntityRef, type Entity } from '@backstage/catalog-model';
-import type { IdentityTuple } from '@red-hat-developer-hub/backstage-plugin-ai-skills-common';
+import {
+  ANNOTATION_NPX_SKILL_KEY,
+  ANNOTATION_NPX_SKILL_REGISTRY,
+  type IdentityTuple,
+} from '@red-hat-developer-hub/backstage-plugin-ai-skills-common';
 
 import type {
   CommittedSourceState,
@@ -316,8 +320,8 @@ function configuredFieldsChanged(previous: Entity, next: Entity): boolean {
     stringifyEntityRef(previous) !== stringifyEntityRef(next) ||
     [
       'backstage.io/techdocs-ref',
-      'rhdh.io/npx-skill-registry',
-      'rhdh.io/npx-skill-key',
+      ANNOTATION_NPX_SKILL_REGISTRY,
+      ANNOTATION_NPX_SKILL_KEY,
     ].some(
       key =>
         previous.metadata.annotations?.[key] !==

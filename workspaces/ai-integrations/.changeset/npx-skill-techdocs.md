@@ -1,4 +1,5 @@
 ---
+'@red-hat-developer-hub/backstage-plugin-ai-skills-common': minor
 '@red-hat-developer-hub/backstage-plugin-npx-skill-connector-backend': minor
 '@red-hat-developer-hub/backstage-plugin-catalog-backend-module-skills-catalog-provider': minor
 '@red-hat-developer-hub/backstage-plugin-catalog-techdoc-url-reader-backend': minor
